@@ -22,17 +22,21 @@ const lightOffset = { type: 'v3', value: new THREE.Vector3(0.0, 5.0, 5.0) };
 
 const time = {type: 'float', value: 0}
 
+const orbPosition = { type: 'v3', value: new THREE.Vector3(0.0, 10.0, 0.0) };
+
 // Materials: specifying uniforms and shaders
 
 const armadilloMaterial = new THREE.ShaderMaterial({
   uniforms: {
     lightOffset: lightOffset,
+    orbPosition: orbPosition,
   }
 });
 
 const sphereMaterial = new THREE.ShaderMaterial({
   uniforms: {
     // HINT pass uniforms to sphere shader here
+    time: time,
   }
 });
 
@@ -81,7 +85,7 @@ scene.add(sphere);
 
 const sphereLight = new THREE.PointLight(0xffffff, 1, 100);
 scene.add(sphereLight);
-sphereLight.position.set(0, 10, 0);
+sphereLight.position.set(orbPosition);
 
 sphere.position.set(0, 10, 5);
 
@@ -93,10 +97,13 @@ const eyeGeometry = new THREE.SphereGeometry(1.0, 32, 32);
 // HINT Q1a: Add the eyes on the armadillo here.
 const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
 rightEye.scale.set(0.5, 0.5, 0.5);
+rightEye.position.set(0.8,12,3)
+armadilloFrame.add(rightEye)
 
 const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
 leftEye.scale.set(0.5, 0.5, 0.5);
-
+leftEye.position.set(-0.8,12,3)
+armadilloFrame.add(leftEye)
 
 // Laser Beams (Q1b Q1c)
 
@@ -126,11 +133,43 @@ function checkKeyboard() {
 
   // Distance to orb
   // HINT Q1b and Q1c: set/update the position (for static and tracking lasers) and scale (laser length) needed for tracking here.
-  
   // HINT: three.js Positions have a distanceTo function which gives you the distance between two points.
-
   // HINT: three.js Meshes have a visible property which you can use to hide or show the lasers.
-  
+
+  let speed = 0.2
+
+  if (keyboard.pressed("shift"))
+    speed += 0.3
+
+  if (keyboard.pressed("s")) { // move forwards
+    sphere.position.z += speed * Math.cos(sphere.rotation.y)
+    sphere.position.x += speed * Math.sin(sphere.rotation.y)
+  }
+
+  if (keyboard.pressed("w")) { // move backwards
+    sphere.position.z -= 0.2 * Math.cos(sphere.rotation.y)
+    sphere.position.x -= 0.2 * Math.sin(sphere.rotation.y)
+  }
+
+  if (keyboard.pressed("a"))  // turn counterclockwise
+    sphere.rotation.y += Math.PI/60
+
+  if (keyboard.pressed("d")) // turn clockwise
+    sphere.rotation.y -= Math.PI/60
+
+  if (keyboard.pressed("q")) // up
+    sphere.position.y += speed
+
+  if (keyboard.pressed("e")) // down
+    sphere.position.y -= speed
+
+  sphereLight.position.x = sphere.position.x;
+  sphereLight.position.y = sphere.position.y;
+  sphereLight.position.z = sphere.position.z;
+
+  orbPosition.value.z = sphere.position.z;
+  orbPosition.value.x = sphere.position.x;
+  orbPosition.value.y = sphere.position.y;
 }
 
 
@@ -142,6 +181,8 @@ function update() {
   time.value += 1/60;//Assumes 60 frames per second
 
   // HINT: Use one of the lookAt functions available in three.js to make the eyes look at the orb.
+  leftEye.lookAt(sphere.position);
+  rightEye.lookAt(sphere.position);
 
   // Requests the next update call, this creates a loop
   requestAnimationFrame(update);

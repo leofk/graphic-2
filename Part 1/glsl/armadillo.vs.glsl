@@ -1,5 +1,7 @@
 
-uniform vec3 lightPosition;
+// uniform vec3 lightPosition;
+uniform vec3 orbPosition;
+
 
 out vec3 colour;
 
@@ -8,7 +10,8 @@ void main() {
 
     vec3 vertexNormal = normalize(normalMatrix*normal);
 
-    vec3 lightDirection = normalize(vec3(viewMatrix*(vec4(lightPosition - worldPos.xyz, 0.0))));
+    // vec3 lightDirection = normalize(vec3(viewMatrix*(vec4(lightPosition - worldPos.xyz, 0.0))));
+    vec3 lightDirection = normalize(vec3(viewMatrix*(vec4(orbPosition - worldPos.xyz, 0.0))));
 
     float vertexColour = dot(lightDirection, vertexNormal);
     colour = vec3(vertexColour);
