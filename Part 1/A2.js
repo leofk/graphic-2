@@ -122,20 +122,17 @@ const laserMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, wireframe: 
 // HINT: Create meshes for the lasers with the above geometry and material
 // HINT: What should we use as the parent objects for the laser meshes?
 
-
+const quaternion = new THREE.Quaternion();
+quaternion.setFromAxisAngle( new THREE.Vector3( 1, 0, 0 ), Math.PI / 2 );
 
 const laserLeft = new THREE.Mesh(laserGeometry, laserMaterial);
-laserLeft.scale.set(1, 10, 1);
-laserLeft.position.set(3, 0, 1);
-laserLeft.rotation.set(Math.PI/2, 0, 0);
-
+// laserLeft.rotation.set(Math.PI/2, 0, 0);
+laserLeft.applyQuaternion(quaternion);
 leftEye.add(laserLeft);
 
 const laserRight = new THREE.Mesh(laserGeometry, laserMaterial);
-laserRight.scale.set(1, 10, 1);
-laserRight.position.set(-3, 0, 1);
-laserRight.rotation.set(Math.PI/2, 0, 0);
-
+// laserRight.rotation.set(Math.PI/2, 0, 0);
+laserRight.applyQuaternion(quaternion);
 rightEye.add(laserRight);
 
 // Listen to keyboard events.
@@ -154,6 +151,27 @@ function checkKeyboard() {
   // HINT Q1b and Q1c: set/update the position (for static and tracking lasers) and scale (laser length) needed for tracking here.
   // HINT: three.js Positions have a distanceTo function which gives you the distance between two points.
   // HINT: three.js Meshes have a visible property which you can use to hide or show the lasers.
+
+  let leftEyePos = new THREE.Vector3();
+  leftEyePos.setFromMatrixPosition(leftEye.matrixWorld);
+
+  let rightEyePos = new THREE.Vector3();
+  rightEyePos.setFromMatrixPosition(rightEye.matrixWorld);
+
+  let orbPos = new THREE.Vector3();
+  orbPos.setFromMatrixPosition(sphere.matrixWorld);
+
+  if ((leftEyePos.distanceTo(orbPos) && rightEyePos.distanceTo(orbPos)) <= LaserDistance) {
+    laserLeft.visible = true;
+    laserRight.visible = true;
+
+    laserLeft.scale.y = leftEyePos.distanceTo(orbPos);
+    laserRight.scale.y = rightEyePos.distanceTo(orbPos);
+
+  } else {
+    laserLeft.visible = false;
+    laserRight.visible = false;
+  }
 
   let speed = 0.2
 
