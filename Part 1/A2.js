@@ -40,7 +40,11 @@ const sphereMaterial = new THREE.ShaderMaterial({
   }
 });
 
-const eyeMaterial = new THREE.ShaderMaterial();
+const eyeMaterial = new THREE.ShaderMaterial({
+  uniforms: {
+    orbPosition: orbPosition,
+  }
+});
 
 const armadilloFrame = new THREE.Object3D();
 armadilloFrame.position.set(0, 0, -8);
@@ -97,13 +101,13 @@ const eyeGeometry = new THREE.SphereGeometry(1.0, 32, 32);
 // HINT Q1a: Add the eyes on the armadillo here.
 const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
 rightEye.scale.set(0.5, 0.5, 0.5);
-rightEye.position.set(0.8,12,3)
-armadilloFrame.add(rightEye)
+rightEye.position.set(0.8,12,3);
+armadilloFrame.add(rightEye);
 
 const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
 leftEye.scale.set(0.5, 0.5, 0.5);
-leftEye.position.set(-0.8,12,3)
-armadilloFrame.add(leftEye)
+leftEye.position.set(-0.8,12,3);
+armadilloFrame.add(leftEye);
 
 // Laser Beams (Q1b Q1c)
 
@@ -118,6 +122,21 @@ const laserMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, wireframe: 
 // HINT: Create meshes for the lasers with the above geometry and material
 // HINT: What should we use as the parent objects for the laser meshes?
 
+
+
+const laserLeft = new THREE.Mesh(laserGeometry, laserMaterial);
+laserLeft.scale.set(1, 10, 1);
+laserLeft.position.set(3, 0, 1);
+laserLeft.rotation.set(Math.PI/2, 0, 0);
+
+leftEye.add(laserLeft);
+
+const laserRight = new THREE.Mesh(laserGeometry, laserMaterial);
+laserRight.scale.set(1, 10, 1);
+laserRight.position.set(-3, 0, 1);
+laserRight.rotation.set(Math.PI/2, 0, 0);
+
+rightEye.add(laserRight);
 
 // Listen to keyboard events.
 const keyboard = new THREEx.KeyboardState();
