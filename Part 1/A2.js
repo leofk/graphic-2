@@ -90,7 +90,9 @@ scene.add(sphere);
 
 const sphereLight = new THREE.PointLight(0xffffff, 1, 100);
 scene.add(sphereLight);
-sphereLight.position.set(0, 10, 0);
+// sphereLight.position.set(0, 10, 0);
+sphereLight.position.set(orbPosition.value.x, orbPosition.value.y, orbPosition.value.z);
+
 
 sphere.position.set(0, 10, 5);
 
@@ -193,8 +195,6 @@ function checkKeyboard() {
 
   if (keyboard.pressed("e")) // down
     sphere.position.y -= 0.2
-
-  // sphereLight.position = orbPosition;
 }
 
 
