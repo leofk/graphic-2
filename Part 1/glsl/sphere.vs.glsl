@@ -96,8 +96,8 @@ void main() {
 
     vec4 standard = vec4(position, 1.0) * cos(time);
 
-    vec3 modifiedPos = heart1.xyz;                  // Option 1: throbbing heart
-//    vec3 modifiedPos = standard.xyz + heart2.xyz; // Option 2: sphere -> heart
+//    vec3 modifiedPos = heart1.xyz;                  // Option 1: throbbing heart
+      vec3 modifiedPos = standard.xyz + heart2.xyz; // Option 2: sphere -> heart
 //    vec3 modifiedPos = standard.xyz + boring.xyz; // Option 3: sphere -> ellipsoid
 
 
