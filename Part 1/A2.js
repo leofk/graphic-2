@@ -37,6 +37,7 @@ const sphereMaterial = new THREE.ShaderMaterial({
   uniforms: {
     // HINT pass uniforms to sphere shader here
     time: time,
+    orbPosition: orbPosition,
   }
 });
 
@@ -89,7 +90,7 @@ scene.add(sphere);
 
 const sphereLight = new THREE.PointLight(0xffffff, 1, 100);
 scene.add(sphereLight);
-sphereLight.position.set(orbPosition);
+sphereLight.position.set(0, 10, 0);
 
 sphere.position.set(0, 10, 5);
 
@@ -165,48 +166,35 @@ function checkKeyboard() {
     laserLeft.visible = true;
     laserRight.visible = true;
 
-    laserLeft.scale.y = leftEyePos.distanceTo(orbPos);
-    laserRight.scale.y = rightEyePos.distanceTo(orbPos);
+    laserLeft.scale.y = leftEyePos.distanceTo(orbPos) * 2;
+    laserLeft.position.z = leftEyePos.distanceTo(orbPos);
+    laserRight.scale.y = rightEyePos.distanceTo(orbPos) * 2;
+    laserRight.position.z = rightEyePos.distanceTo(orbPos);
 
   } else {
     laserLeft.visible = false;
     laserRight.visible = false;
   }
 
-  let speed = 0.2
+  if (keyboard.pressed("s")) // backwards
+    sphere.position.z += 0.2
 
-  if (keyboard.pressed("shift"))
-    speed += 0.3
+  if (keyboard.pressed("d")) // right
+    sphere.position.x += 0.2
 
-  if (keyboard.pressed("s")) { // move forwards
-    sphere.position.z += speed * Math.cos(sphere.rotation.y)
-    sphere.position.x += speed * Math.sin(sphere.rotation.y)
-  }
+  if (keyboard.pressed("w")) // forwards
+    sphere.position.z -= 0.2
 
-  if (keyboard.pressed("w")) { // move backwards
-    sphere.position.z -= 0.2 * Math.cos(sphere.rotation.y)
-    sphere.position.x -= 0.2 * Math.sin(sphere.rotation.y)
-  }
-
-  if (keyboard.pressed("a"))  // turn counterclockwise
-    sphere.rotation.y += Math.PI/60
-
-  if (keyboard.pressed("d")) // turn clockwise
-    sphere.rotation.y -= Math.PI/60
+  if (keyboard.pressed("a")) // left
+    sphere.position.x -= 0.2
 
   if (keyboard.pressed("q")) // up
-    sphere.position.y += speed
+    sphere.position.y += 0.2
 
   if (keyboard.pressed("e")) // down
-    sphere.position.y -= speed
+    sphere.position.y -= 0.2
 
-  sphereLight.position.x = sphere.position.x;
-  sphereLight.position.y = sphere.position.y;
-  sphereLight.position.z = sphere.position.z;
-
-  orbPosition.value.z = sphere.position.z;
-  orbPosition.value.x = sphere.position.x;
-  orbPosition.value.y = sphere.position.y;
+  // sphereLight.position = orbPosition;
 }
 
 

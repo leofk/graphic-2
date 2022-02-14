@@ -1,5 +1,3 @@
-uniform vec3 orbPosition;
-
 out vec3 modelPos;
 
 void main() {
