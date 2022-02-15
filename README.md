@@ -19,6 +19,7 @@ Keybinds:
 - cosmetic adjustments
 - changed movement back to armadillo
 - laser now disintigrates pulsing heart
+- heart colour changes using lambert's law
 - new one spawns in a random location
 
 Keybinds:
