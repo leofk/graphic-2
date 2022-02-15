@@ -46,7 +46,7 @@ function setup() {
 
     // World Coordinate Frame: other objects are defined with respect to it.
     const worldFrame = new THREE.AxesHelper(1);
-    scene.add(worldFrame);
+    // scene.add(worldFrame);
 
     // Diffuse texture map (this defines the main colors of the floor)
     const floorDiff = new THREE.TextureLoader().load('images/cobblestone_floor_diff.jpg');
