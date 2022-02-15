@@ -1,9 +1,11 @@
 uniform float time;
+uniform float hitTime;
 uniform vec3 orbPosition;
+uniform bool hit;
+
 const float PI = 3.14159265;
 const float tht = 1.57;
 
-out vec3 interpolatedNormal;
 out vec3 colour;
 
 void main() {
@@ -14,24 +16,13 @@ void main() {
 
     float vertexColour = dot(lightDirection, vertexNormal);
     colour = vec3(vertexColour, 0.0, 0.0);
-
-    interpolatedNormal = normal;
-
-    // TODO Q4 transform the vertex position to create deformations
-    // Make sure to change the size of the orb sinusoidally with time.
-    // The deformation must be a function on the vertice's position on the sphere.
+    if (hit) colour = vec3(0.0, vertexColour, vertexColour);
 
     mat4 scale = mat4(
     2, 0, 0, 0,
     0, 2, 0, 0,
     0, 0, 2, 0,
     0, 0, 0, 1 );
-
-    mat4 small = mat4(
-    1/2, 0, 0, 0,
-    0, 1/2, 0, 0,
-    0, 0, 1/2, 0,
-    0, 0, 0, 1    );
 
     mat4 rot1 = mat4(
     1, 0, 0, 0,
@@ -51,11 +42,6 @@ void main() {
     0, 0, 1, 0,
     0, 0, 0, 1 );
 
-    mat4 lame = mat4(
-    1, 1, 0, 0,
-    1, 2, 1, 0,
-    0, 1, 1, 0,
-    0, 0, 0, 1 );
 
     mat4 ref = mat4(
     cos(tht), -sin(tht), 0, 0,
@@ -85,21 +71,16 @@ void main() {
     heart.z = sin(u) * sin(v);
     heart.w = 1.0;
 
-
     mat4 heartMat = rot2 * ref * ref3 * scale;
     vec4 heart1 = heartMat * heart * max(abs(sin(time)), 0.7);
+    vec3 modifiedPos = heart1.xyz;
 
-    vec4 heart2 = ref * ref3 * scale * heart * abs(sin(time));
-
-    mat4 boringMat = scale * rot1 * rot2 * lame;
-    vec4 boring = boringMat * vec4(position, 1.0) * sin(time);
-
-    vec4 standard = vec4(position, 1.0) * cos(time);
-
-    vec3 modifiedPos = heart1.xyz; // throbbing heart
-//    vec3 modifiedPos = standard.xyz + heart2.xyz; // sphere -> heart
-//    vec3 modifiedPos = standard.xyz + boring.xyz; // sphere -> ellipsoid
-
+    if (hit) {
+        scale *= hitTime;
+        mat4 hitMat = rot2 * ref * ref3 * scale;
+        vec4 hitHeart = hitMat * heart;
+        modifiedPos = hitHeart.xyz;
+    }
 
     // Multiply each vertex by the model matrix to get the world position of each vertex, 
     // then the view matrix to get the position in the camera coordinate system, 

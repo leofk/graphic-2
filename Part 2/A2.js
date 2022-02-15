@@ -20,9 +20,11 @@ const {
 
 const lightOffset = { type: 'v3', value: new THREE.Vector3(0.0, 5.0, 5.0) };
 
-const time = {type: 'float', value: 0}
+const time = {type: 'float', value: 0};
+const hit = { type: 'bool', value: false};
+const hitTime = {type: 'float', value: 0};
 
-const orbPosition = { type: 'v3', value: new THREE.Vector3(0.0, 10.0, 0.0) };
+const orbPosition = { type: 'v3', value: new THREE.Vector3(0.0, 20.0, 0.0) };
 
 // Materials: specifying uniforms and shaders
 
@@ -30,6 +32,7 @@ const armadilloMaterial = new THREE.ShaderMaterial({
   uniforms: {
     lightOffset: lightOffset,
     orbPosition: orbPosition,
+    hit: hit,
   }
 });
 
@@ -38,6 +41,8 @@ const sphereMaterial = new THREE.ShaderMaterial({
     // HINT pass uniforms to sphere shader here
     time: time,
     orbPosition: orbPosition,
+    hit: hit,
+    hitTime: hitTime,
   }
 });
 
@@ -93,9 +98,7 @@ scene.add(sphereLight);
 // sphereLight.position.set(0, 10, 0);
 sphereLight.position.set(orbPosition.value.x, orbPosition.value.y, orbPosition.value.z);
 
-
 sphere.position.set(0, 10, 5);
-
 
 // Eyes (Q1a and Q1b)
 // Create the eye ball geometry
@@ -142,18 +145,42 @@ rightEye.add(laserRight);
 const keyboard = new THREEx.KeyboardState();
 function checkKeyboard() {
 
-  //HINT: Use keyboard.pressed to check for keyboard input. 
-  //Example: keyboard.pressed("A") to check if the A key is pressed.
-
   // The following tells three.js that some uniforms might have changed.
   armadilloMaterial.needsUpdate = true;
   sphereMaterial.needsUpdate = true;
   eyeMaterial.needsUpdate = true;
-
   // Distance to orb
   // HINT Q1b and Q1c: set/update the position (for static and tracking lasers) and scale (laser length) needed for tracking here.
   // HINT: three.js Positions have a distanceTo function which gives you the distance between two points.
   // HINT: three.js Meshes have a visible property which you can use to hide or show the lasers.
+
+
+  let speed = 0.2
+
+  if (keyboard.pressed("shift"))
+    speed += 0.3
+
+  if (keyboard.pressed("w")) { // move forwards
+    armadilloFrame.position.z += speed * Math.cos(armadilloFrame.rotation.y)
+    armadilloFrame.position.x += speed * Math.sin(armadilloFrame.rotation.y)
+  }
+
+  if (keyboard.pressed("s")) { // move backwards
+    armadilloFrame.position.z -= 0.2 * Math.cos(armadilloFrame.rotation.y)
+    armadilloFrame.position.x -= 0.2 * Math.sin(armadilloFrame.rotation.y)
+  }
+
+  if (keyboard.pressed("a"))  // turn counterclockwise
+    armadilloFrame.rotation.y += Math.PI/60
+
+  if (keyboard.pressed("d")) // turn clockwise
+    armadilloFrame.rotation.y -= Math.PI/60
+}
+
+
+// Setup update callback
+function update() {
+  checkKeyboard();
 
   let leftEyePos = new THREE.Vector3();
   leftEyePos.setFromMatrixPosition(leftEye.matrixWorld);
@@ -164,7 +191,15 @@ function checkKeyboard() {
   let orbPos = new THREE.Vector3();
   orbPos.setFromMatrixPosition(sphere.matrixWorld);
 
+  let temp;
+
   if ((leftEyePos.distanceTo(orbPos) && rightEyePos.distanceTo(orbPos)) <= LaserDistance) {
+    temp = true;
+
+    leftEye.lookAt(sphere.position);
+    rightEye.lookAt(sphere.position);
+    hitTime.value = Math.sin(time.value);
+
     laserLeft.visible = true;
     laserRight.visible = true;
 
@@ -173,41 +208,23 @@ function checkKeyboard() {
     laserRight.scale.y = rightEyePos.distanceTo(orbPos) * 2;
     laserRight.position.z = rightEyePos.distanceTo(orbPos);
 
+    if (hitTime.value < 0.0) {
+      scene.remove(sphere);
+
+      scene.add(sphere);
+      let x = (Math.random() - 0.5) * 50;
+      let z = (Math.random() - 0.5) * 50;
+      sphere.position.set(x, 10, z);
+      time.value = 0;
+    }
+
   } else {
     laserLeft.visible = false;
     laserRight.visible = false;
   }
 
-  if (keyboard.pressed("s")) // backwards
-    sphere.position.z += 0.2
-
-  if (keyboard.pressed("d")) // right
-    sphere.position.x += 0.2
-
-  if (keyboard.pressed("w")) // forwards
-    sphere.position.z -= 0.2
-
-  if (keyboard.pressed("a")) // left
-    sphere.position.x -= 0.2
-
-  if (keyboard.pressed("q")) // up
-    sphere.position.y += 0.2
-
-  if (keyboard.pressed("e")) // down
-    sphere.position.y -= 0.2
-}
-
-
-
-// Setup update callback
-function update() {
-  checkKeyboard();
-
+  hit.value = temp;
   time.value += 1/60;//Assumes 60 frames per second
-
-  // HINT: Use one of the lookAt functions available in three.js to make the eyes look at the orb.
-  leftEye.lookAt(sphere.position);
-  rightEye.lookAt(sphere.position);
 
   // Requests the next update call, this creates a loop
   requestAnimationFrame(update);

@@ -19,14 +19,13 @@ function setup() {
 
     // Construct a THREEjs renderer from the canvas and context.
     const renderer = new THREE.WebGLRenderer({ canvas, context, antialias: true });
-    // renderer.setClearColor(0xFFCAE4); // pink background colour
-     renderer.setClearColor(0xBCFFCE); // green background colour
+    renderer.setClearColor(0xFFCAE4); // pink background colour
 
     const scene = new THREE.Scene();
 
     // Set up the camera.
-    const camera = new THREE.PerspectiveCamera(30.0, 1.0, 0.05, 200.0); // view angle, aspect ratio, near, far
-    camera.position.set(0.0, 40.0, 55.0);
+    const camera = new THREE.PerspectiveCamera(30.0, 1.0, 0.05, 500.0); // view angle, aspect ratio, near, far
+    camera.position.set(0.0, 70.0, 100.0);
     camera.lookAt(scene.position);
     scene.add(camera);
 
@@ -72,7 +71,7 @@ function setup() {
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2.0;
     floor.position.y = -0.3;
-    scene.add(floor);
+    // scene.add(floor);
     floor.parent = worldFrame;
 
     // Cast a weak ambient light to make the floor visible.

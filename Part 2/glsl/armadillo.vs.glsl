@@ -1,5 +1,6 @@
 uniform vec3 lightPosition;
 uniform vec3 orbPosition;
+uniform bool hit;
 out vec3 colour;
 
 void main() {
@@ -12,6 +13,7 @@ void main() {
 
     float vertexColour = dot(lightDirection, vertexNormal);
     colour = vec3(vertexColour);
+//    if (hit) colour.r+=5.0;
 
     gl_Position = projectionMatrix * viewMatrix * worldPos;   
 }
