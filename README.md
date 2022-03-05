@@ -1,5 +1,10 @@
 # Concorde
 
+To Run Locally:
+- npx http-server ./[file directory] (on command line)
+- localhost:8080 (in browser)
+- open desired html file
+
 **Part 1**
 
 Keybinds:
