@@ -1,4 +1,4 @@
-# Concorde.
+# Concorde
 
 **Part 1**
 
